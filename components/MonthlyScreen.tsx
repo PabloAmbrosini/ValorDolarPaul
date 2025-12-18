@@ -6,7 +6,7 @@ import {
     ArrowDown
 } from 'lucide-react';
 
-import PriceChart from './PriceChart.tsx';
+
 import StatsCard from './StatsCard.tsx';
 import DailyListItem from './DailyListItem.tsx';
 import { getMonthlyData } from '../services/dollarService.ts';
@@ -122,11 +122,7 @@ const MonthlyScreen: React.FC<MonthlyScreenProps> = ({ onNavigate }) => {
                     </div>
                 </div>
 
-                {/* Chart Area */}
-                <div className="w-full h-[240px] mb-6 relative group">
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-                    <PriceChart data={chart} />
-                </div>
+
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 gap-3 px-4 mb-8">

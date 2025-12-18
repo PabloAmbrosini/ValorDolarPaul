@@ -168,21 +168,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                 </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-2 gap-4 px-4 pb-8 mt-auto">
-                <button onClick={() => onNavigate('QUERY')} className="group flex flex-col items-center justify-center gap-3 p-5 rounded-3xl bg-white dark:bg-[#1C252E] border border-slate-100 dark:border-white/5 hover:border-primary/50 dark:hover:border-primary/50 shadow-sm hover:shadow-md transition-all active:scale-95">
-                    <div className="w-12 h-12 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
-                        <span className="material-symbols-outlined text-[28px]">calculate</span>
-                    </div>
-                    <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Calculadora</span>
-                </button>
-                <button className="group flex flex-col items-center justify-center gap-3 p-5 rounded-3xl bg-white dark:bg-[#1C252E] border border-slate-100 dark:border-white/5 hover:border-purple-500/50 dark:hover:border-purple-500/50 shadow-sm hover:shadow-md transition-all active:scale-95">
-                    <div className="w-12 h-12 rounded-2xl bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-300">
-                        <span className="material-symbols-outlined text-[28px]">currency_exchange</span>
-                    </div>
-                    <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Otras Divisas</span>
-                </button>
-            </div>
+
 
             <div className="pb-4 text-center opacity-40 hover:opacity-100 transition-opacity">
                 <p className="text-[10px] uppercase font-bold tracking-[0.3em]">Valor Dólar Paul</p>
