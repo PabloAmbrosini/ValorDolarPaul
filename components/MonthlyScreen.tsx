@@ -19,10 +19,16 @@ interface MonthlyScreenProps {
 const MonthlyScreen: React.FC<MonthlyScreenProps> = ({ onNavigate }) => {
     const [viewDate, setViewDate] = useState(new Date());
     const [data, setData] = useState<{stats: MonthlyStats, chart: ChartDataPoint[], history: DailyRate[]} | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const result = getMonthlyData(viewDate.getMonth(), viewDate.getFullYear());
-        setData(result);
+        const load = async () => {
+            setLoading(true);
+            const result = await getMonthlyData(viewDate.getMonth(), viewDate.getFullYear());
+            setData(result);
+            setLoading(false);
+        };
+        load();
     }, [viewDate]);
 
     const handlePrevMonth = () => {
@@ -42,7 +48,22 @@ const MonthlyScreen: React.FC<MonthlyScreenProps> = ({ onNavigate }) => {
         return m.charAt(0).toUpperCase() + m.slice(1);
     }, [viewDate]);
 
-    if (!data) return null;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+                <span className="material-symbols-outlined animate-spin text-primary text-4xl">sync</span>
+            </div>
+        );
+    }
+
+    if (!data || data.history.length === 0) {
+        return (
+            <div className="min-h-screen bg-background-light dark:bg-background-dark text-center p-8">
+                 <button onClick={() => onNavigate('HOME')} className="mb-4 text-primary">Volver</button>
+                 <p className="dark:text-white">No hay datos disponibles para este período.</p>
+            </div>
+        );
+    }
 
     const { stats, chart, history } = data;
 
@@ -52,7 +73,6 @@ const MonthlyScreen: React.FC<MonthlyScreenProps> = ({ onNavigate }) => {
                 <button 
                     onClick={() => onNavigate('HOME')}
                     className="text-slate-900 dark:text-white flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-                    aria-label="Go back"
                 >
                     <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>arrow_back</span>
                 </button>
