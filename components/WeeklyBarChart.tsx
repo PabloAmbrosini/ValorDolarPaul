@@ -136,24 +136,7 @@ const WeeklyBarChart: React.FC<WeeklyBarChartProps> = ({
                             className="transition-all duration-300 group-hover:fill-primary group-hover:opacity-100"
                         />
 
-                        {/* Value Label (Top of Bar) */}
-                        <text
-                            x={x}
-                            y={y - 3}
-                            textAnchor="middle"
-                            fontSize="3.5"
-                            fontWeight="bold"
-                            fill="currentColor"
-                            className="text-slate-700 dark:text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                        >
-                            ${Math.floor(d.value)}
-                        </text>
-
-                        {/* Variation Label (Bottom or Middle) - shown always or on hover? 
-                             User asked for "Show value and variation". Let's show variation permanently but tiny, 
-                             or maybe better: show value permanently and variation below.
-                             Let's try: Value permanently on top (small), Date at bottom.
-                         */}
+                        {/* Value Label (Top of Bar) - Permanent but subtle */}
                         <text
                             x={x}
                             y={y - 4}
@@ -166,14 +149,18 @@ const WeeklyBarChart: React.FC<WeeklyBarChartProps> = ({
                             {Math.floor(d.value)}
                         </text>
 
-                        {/* Variation Bubble */}
-                        {i > 0 && (
-                            <foreignObject x={x - 6} y={y - 12} width={12} height={6} className="overflow-visible">
-                                <div className={`flex justify-center items-center text-[2px] font-bold px-1 rounded-full ${isPositive ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-500'} opacity-60 group-hover:opacity-100 transition-opacity`}>
-                                    {isPositive ? '+' : ''}{d.change.toFixed(1)}%
-                                </div>
-                            </foreignObject>
-                        )}
+                        {/* Value Label (Top of Bar) */}
+                        <text
+                            x={x}
+                            y={y - 4}
+                            textAnchor="middle"
+                            fontSize="3"
+                            fontWeight="bold"
+                            fill="currentColor"
+                            className="text-slate-700 dark:text-white"
+                        >
+                            {Math.floor(d.value)}
+                        </text>
 
                         {/* Date Label */}
                         <text
