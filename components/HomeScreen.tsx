@@ -4,6 +4,9 @@ import { ChartDataPoint } from '../types.ts';
 // import Sparkline from './Sparkline.tsx'; // Keeping it if needed later
 import WeeklyBarChart from './WeeklyBarChart.tsx';
 
+import { useHaptic } from '../hooks/useHaptic.ts';
+import { useTheme } from '../hooks/useTheme.ts';
+
 interface HomeScreenProps {
     onNavigate: (screen: string) => void;
 }
@@ -12,6 +15,32 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
     const [rateData, setRateData] = useState<{ compra: number, venta: number, timestamp: Date } | null>(null);
     const [trendData, setTrendData] = useState<ChartDataPoint[]>([]);
     const [loading, setLoading] = useState(true);
+    const { trigger, triggerSuccess } = useHaptic();
+    const { theme, toggleTheme } = useTheme();
+
+    const handleShare = async () => {
+        trigger();
+        if (rateData) {
+            const text = `💰 Dólar BNA\n💵 Compra: $${Math.floor(rateData.compra)}\n💵 Venta: $${Math.floor(rateData.venta)}`;
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Valor Dólar Paul',
+                        text: text,
+                        url: window.location.href
+                    });
+                    triggerSuccess();
+                } catch (e) {
+                    // Share cancelled
+                }
+            } else {
+                // Fallback copy to clipboard
+                navigator.clipboard.writeText(text);
+                alert("Copiado al portapapeles!");
+                triggerSuccess();
+            }
+        }
+    };
 
     const fetchData = useCallback(async (isSilent = false) => {
         if (!isSilent) setLoading(true);
@@ -47,16 +76,25 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
         <div className="flex flex-col min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-white pb-8 animate-in fade-in duration-500">
             {/* Header */}
             <div className="flex items-center p-4 pb-2 justify-between sticky top-0 z-20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-xl border-b border-transparent dark:border-white/5">
-                <div className="w-10"></div> {/* Spacer for center alignment */}
+                <div className="flex w-10 items-center justify-start">
+                    <button
+                        onClick={() => { trigger(); toggleTheme(); }}
+                        className="flex cursor-pointer items-center justify-center rounded-full h-10 w-10 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors active:scale-95"
+                    >
+                        <span className="material-symbols-outlined text-[24px]">
+                            {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+                        </span>
+                    </button>
+                </div>
                 <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">
                     Dólar BNA
                 </h2>
                 <div className="flex w-10 items-center justify-end">
                     <button
-                        onClick={() => onNavigate('QUERY')}
+                        onClick={() => { trigger(); onNavigate('QUERY'); }}
                         className="flex cursor-pointer items-center justify-center rounded-full h-10 w-10 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors active:scale-95"
                     >
-                        <span className="material-symbols-outlined text-[24px]">settings</span>
+                        <span className="material-symbols-outlined text-[24px]">calendar_month</span>
                     </button>
                 </div>
             </div>
@@ -80,6 +118,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
             {/* Main Card */}
             <div className="px-4 py-4">
                 <div className="group relative flex flex-col gap-6 rounded-3xl p-6 bg-white dark:bg-[#1C252E] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-slate-100 dark:border-white/5 overflow-hidden transition-all hover:scale-[1.01] duration-500">
+
+                    {/* Share Button (Absolute) */}
+                    <button
+                        onClick={handleShare}
+                        className="absolute top-4 right-4 z-20 p-2 rounded-full bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-500 hover:text-primary hover:bg-primary/10 transition-all active:scale-90"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">ios_share</span>
+                    </button>
 
                     {/* Background Elements */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] pointer-events-none group-hover:bg-primary/10 transition-all duration-700"></div>
@@ -130,7 +176,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                             <span className="text-xs font-bold">+0.15%</span>
                         </div>
                         <button
-                            onClick={() => fetchData()}
+                            onClick={() => { trigger(); fetchData(); }}
                             disabled={loading}
                             className="text-xs font-semibold text-slate-400 hover:text-primary transition-colors flex items-center gap-1.5 active:scale-95 disabled:opacity-50"
                         >
