@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { getOfficialRate, getWeeklyTrend } from '../services/dollarService.ts';
 import { ChartDataPoint } from '../types.ts';
-import Sparkline from './Sparkline.tsx';
+// import Sparkline from './Sparkline.tsx'; // Keeping it if needed later
+import WeeklyBarChart from './WeeklyBarChart.tsx';
 
 interface HomeScreenProps {
     onNavigate: (screen: string) => void;
@@ -143,32 +144,27 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
             {/* Trend Chart */}
             <div className="px-4 pb-6">
                 <div className="flex items-center justify-between mb-4 px-2">
-                    <h4 className="text-slate-900 dark:text-white text-base font-bold">Historial 7 días</h4>
+                    <h4 className="text-slate-900 dark:text-white text-base font-bold">Tendencia Semanal</h4>
                     <button onClick={() => onNavigate('MONTHLY')} className="text-primary text-xs font-bold uppercase tracking-wide hover:underline">
                         Ver todo
                     </button>
                 </div>
                 <div
                     onClick={() => onNavigate('MONTHLY')}
-                    className="h-40 w-full bg-white dark:bg-[#1C252E] rounded-3xl p-0 border border-slate-100 dark:border-white/5 relative overflow-hidden cursor-pointer hover:border-primary/30 transition-all group shadow-sm active:scale-[0.98]"
+                    className="h-64 w-full bg-white dark:bg-[#1C252E] rounded-3xl p-6 border border-slate-100 dark:border-white/5 relative overflow-hidden cursor-pointer hover:border-primary/30 transition-all group shadow-sm active:scale-[0.99]"
                 >
                     {loading ? (
                         <div className="w-full h-full flex items-center justify-center">
                             <div className="w-10 h-10 border-4 border-slate-200 dark:border-slate-700 border-t-primary rounded-full animate-spin"></div>
                         </div>
                     ) : (
-                        <>
-                            <div className="absolute inset-0 p-6 flex flex-col justify-between z-10 pointer-events-none">
-                                <div className="flex justify-between items-start">
-                                    <span className="text-xs font-medium text-slate-400">Variación</span>
-                                    <span className="text-xs font-medium text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full">Estable</span>
-                                </div>
-                            </div>
-                            <div className="absolute bottom-0 left-0 right-0 h-32 opacity-80 group-hover:scale-105 transition-transform duration-500 ease-out origin-bottom">
-                                <Sparkline data={trendData} height={120} showDot={true} />
-                            </div>
-                        </>
+                        <div className="w-full h-full relative z-10">
+                            {/* Optional: Add a title or aggregate stat inside the chart area if needed */}
+                            <WeeklyBarChart data={trendData} color="#137fec" />
+                        </div>
                     )}
+                    {/* Background Glow */}
+                    <div className="absolute -bottom-10 left-10 w-full h-20 bg-primary/5 blur-3xl rounded-full"></div>
                 </div>
             </div>
 
