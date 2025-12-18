@@ -1,0 +1,5 @@
+{
+  "name": "DollarHistory",
+  "description": "A financial tracking dashboard showing monthly historical data of the official dollar value.",
+  "requestFramePermissions": []
+}
