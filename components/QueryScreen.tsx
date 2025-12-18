@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { getRateForDate } from '../services/dollarService';
-import { DailyRate } from '../types';
+import { getRateForDate } from '../services/dollarService.ts';
+import { DailyRate } from '../types.ts';
 
 interface QueryScreenProps {
     onNavigate: (screen: string) => void;
@@ -178,15 +178,13 @@ const QueryScreen: React.FC<QueryScreenProps> = ({ onNavigate }) => {
                                 </div>
                             </div>
                             
-                            {/* Mini Chart Visualization - Simplified static svg for the query result visual */}
+                            {/* Mini Chart Visualization */}
                             <div className="relative h-24 w-full">
-                                {/* Grid Lines */}
                                 <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
                                     <div className="border-t border-dashed border-gray-200 dark:border-gray-700 w-full"></div>
                                     <div className="border-t border-dashed border-gray-200 dark:border-gray-700 w-full"></div>
                                     <div className="border-t border-dashed border-gray-200 dark:border-gray-700 w-full"></div>
                                 </div>
-                                {/* Sparkline SVG */}
                                 <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 40">
                                     <defs>
                                         <linearGradient id="gradient-query" x1="0" x2="0" y1="0" y2="1">
@@ -206,6 +204,9 @@ const QueryScreen: React.FC<QueryScreenProps> = ({ onNavigate }) => {
                         </div>
                     </div>
                 )}
+                <div className="pb-6 text-center mt-auto">
+                    <p className="text-slate-500 dark:text-slate-700 text-[10px] font-bold mt-2 uppercase tracking-[0.2em]">Diseñado por Paul</p>
+                </div>
             </div>
         </div>
     );

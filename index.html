@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dólar BNA - Historial</title>
+    <title>Dólar BNA - Historial Vivo</title>
     
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -51,6 +51,11 @@
             mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
             -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
         }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-soft { animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
     
     <script type="importmap">
@@ -69,7 +74,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <!-- Script de entrada crítico -->
     <script type="module" src="index.tsx"></script>
 </body>
 </html>

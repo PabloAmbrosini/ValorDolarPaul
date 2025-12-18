@@ -103,6 +103,9 @@ const MonthlyScreen: React.FC<MonthlyScreenProps> = ({ onNavigate }) => {
                         ))}
                     </div>
                 </div>
+                <div className="pb-6 text-center">
+                    <p className="text-slate-500 dark:text-slate-700 text-[10px] font-bold mt-2 uppercase tracking-[0.2em]">Diseñado por Paul</p>
+                </div>
             </main>
         </div>
     );

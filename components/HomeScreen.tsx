@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { getOfficialRate } from '../services/dollarService';
+import React, { useEffect, useState, useCallback } from 'react';
+import { getOfficialRate } from '../services/dollarService.ts';
 
 interface HomeScreenProps {
     onNavigate: (screen: string) => void;
@@ -7,17 +7,28 @@ interface HomeScreenProps {
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
     const [rateData, setRateData] = useState<{compra: number, venta: number, timestamp: Date} | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getOfficialRate();
-            setRateData(data);
-        };
-        fetchData();
+    const fetchData = useCallback(async (isSilent = false) => {
+        if (!isSilent) setLoading(true);
+        const data = await getOfficialRate();
+        setRateData(data);
+        setLoading(false);
     }, []);
 
+    useEffect(() => {
+        // Carga inicial al abrir
+        fetchData();
+
+        // Actualizar cuando la ventana recupera el foco (al volver a la app)
+        const handleFocus = () => fetchData(true);
+        window.addEventListener('focus', handleFocus);
+        
+        return () => window.removeEventListener('focus', handleFocus);
+    }, [fetchData]);
+
     const formattedDate = rateData 
-        ? new Intl.DateTimeFormat('es-AR', { hour: '2-digit', minute: '2-digit' }).format(rateData.timestamp)
+        ? new Intl.DateTimeFormat('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(rateData.timestamp)
         : '--:--';
 
     return (
@@ -43,9 +54,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                     Cotización Oficial
                 </h3>
                 <div className="flex items-center gap-2 mt-2 px-3 py-1 rounded-full bg-slate-200 dark:bg-slate-800">
-                    <span className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">schedule</span>
+                    <span className={`material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400 ${loading ? 'animate-spin' : ''}`}>
+                        {loading ? 'sync' : 'schedule'}
+                    </span>
                     <p className="text-slate-600 dark:text-slate-400 text-xs font-medium leading-normal uppercase tracking-wide">
-                        Actualizado hoy {formattedDate}hs
+                        {loading ? 'Actualizando...' : `Actualizado hoy ${formattedDate}hs`}
                     </p>
                 </div>
             </div>
@@ -62,9 +75,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                         <div className="flex justify-between items-end mb-1">
                             <p className="text-slate-500 dark:text-slate-400 text-sm font-semibold uppercase tracking-wider">Compra</p>
                         </div>
-                        <div className="flex items-baseline gap-2">
+                        <div className={`flex items-baseline gap-2 ${loading ? 'animate-pulse-soft opacity-50' : ''}`}>
                             <p className="text-slate-900 dark:text-white tracking-tighter text-5xl font-black leading-none">
-                                {rateData ? `$${rateData.compra.toLocaleString('es-AR', {minimumFractionDigits: 2})}` : '...'}
+                                {rateData ? `$${rateData.compra.toLocaleString('es-AR', {minimumFractionDigits: 2})}` : '$0,00'}
                             </p>
                         </div>
                     </div>
@@ -76,9 +89,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                         <div className="flex justify-between items-end mb-1">
                             <p className="text-slate-500 dark:text-slate-400 text-sm font-semibold uppercase tracking-wider">Venta</p>
                         </div>
-                        <div className="flex items-baseline gap-2">
+                        <div className={`flex items-baseline gap-2 ${loading ? 'animate-pulse-soft opacity-50' : ''}`}>
                             <p className="text-primary tracking-tighter text-5xl font-black leading-none">
-                                {rateData ? `$${rateData.venta.toLocaleString('es-AR', {minimumFractionDigits: 2})}` : '...'}
+                                {rateData ? `$${rateData.venta.toLocaleString('es-AR', {minimumFractionDigits: 2})}` : '$0,00'}
                             </p>
                         </div>
                     </div>
@@ -89,7 +102,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                             <span className="material-symbols-outlined text-[18px]">trending_up</span>
                             <span className="text-sm font-bold">+0.15%</span>
                         </div>
-                        <span className="text-xs text-slate-400">Variación 24hs</span>
+                        <button onClick={() => fetchData()} className="text-xs text-slate-400 hover:text-primary transition-colors flex items-center gap-1">
+                            <span className="material-symbols-outlined text-xs">refresh</span>
+                            Refrescar ahora
+                        </button>
                     </div>
                 </div>
             </div>
@@ -109,9 +125,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                     onClick={() => onNavigate('MONTHLY')}
                     className="h-32 w-full bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-slate-800 flex items-center justify-center relative overflow-hidden cursor-pointer hover:bg-slate-50 dark:hover:bg-[#202b37] transition-colors"
                 >
-                    {/* Sparkline SVG representation */}
                     <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 40">
                         <defs>
+                            {/* Fixed duplicate attribute 'x2' by changing it to 'y2' */}
                             <linearGradient id="gradient-spark" x1="0" x2="0" y1="0" y2="1">
                                 <stop offset="0%" stopColor="#137fec" stopOpacity="0.2"></stop>
                                 <stop offset="100%" stopColor="#137fec" stopOpacity="0"></stop>
@@ -121,7 +137,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                         <path d="M0 35 L10 32 L20 34 L30 25 L40 28 L50 20 L60 22 L70 15 L80 18 L90 10 L100 5" fill="none" stroke="#137fec" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                         <circle className="dark:stroke-surface-dark" cx="100" cy="5" fill="#137fec" r="3" stroke="white" strokeWidth="2"></circle>
                     </svg>
-                    {/* Axis labels (minimalist) */}
                     <div className="absolute bottom-2 left-4 text-[10px] text-slate-400 font-medium">Lunes</div>
                     <div className="absolute bottom-2 right-4 text-[10px] text-slate-400 font-medium">Hoy</div>
                 </div>
@@ -148,9 +163,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                 </button>
             </div>
 
-            {/* Footer source */}
             <div className="pb-6 text-center">
                 <p className="text-slate-400 dark:text-slate-600 text-xs font-normal">Fuente: Banco de la Nación Argentina</p>
+                <p className="text-slate-500 dark:text-slate-700 text-[10px] font-bold mt-2 uppercase tracking-[0.2em]">Diseñado por Paul</p>
             </div>
         </div>
     );
