@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import HomeScreen from './components/HomeScreen';
-import MonthlyScreen from './components/MonthlyScreen';
-import QueryScreen from './components/QueryScreen';
+import HomeScreen from './components/HomeScreen.tsx';
+import MonthlyScreen from './components/MonthlyScreen.tsx';
+import QueryScreen from './components/QueryScreen.tsx';
 
 type Screen = 'HOME' | 'MONTHLY' | 'QUERY';
 
